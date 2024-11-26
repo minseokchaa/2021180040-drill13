@@ -24,6 +24,7 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
+
 class Idle:
 
     @staticmethod
@@ -183,6 +184,7 @@ class RunDown:
 
 class Boy:
     def __init__(self):
+        global sx,sy
         self.frame = 0
         self.action = 3
         self.image = load_image('animation_sheet.png')
@@ -206,6 +208,7 @@ class Boy:
         # modify here
         # self.x, self.y = get_canvas_width() / 2, get_canvas_height() / 2
         self.x, self.y = server.background.w/2, server.background.h/2
+        self.ball_count =0
 
 
 
@@ -221,8 +224,8 @@ class Boy:
         # self.x = clamp(25.0, self.x, get_canvas_width()-25.0)
         # self.y = clamp(25.0, self.y, get_canvas_height()-25.0)
 
-        self.x = clamp(50, self.x, server.background.w -50)
-        self.y = clamp(50, self.y, server.background.h - 50)
+        self.x = clamp(20, self.x, server.background.w -20)
+        self.y = clamp(20, self.y, server.background.h - 20)
 
 
     def handle_event(self, event):
@@ -234,13 +237,20 @@ class Boy:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
         self.image.clip_draw(int(self.frame) * 100, self.action * 100, 100, 100, sx, sy)
-        self.font.draw(int(sx - 100), int(sy + 60), f'({self.x:5.5f}, {self.y:5.5f})', (255, 255, 0))
+        self.font.draw(sx - 10, sy + 60, f'{self.ball_count}', (0, 0, 255))
+
+        draw_rectangle(*self.get_bb())
+        draw_rectangle(sx-1,sy-1,sx+1,sy+1)
 
 
     def get_bb(self):
-        return self.x - 20, self.y - 50, self.x + 20, self.y + 50
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx - 20, sy - 50, sx + 20, sy + 50
 
     def handle_collision(self, group, other):
+        if group == 'boy:ball':
+            self.ball_count +=1
         pass
 
 
